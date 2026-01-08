@@ -8,22 +8,20 @@ Parameters:
     AllowedValues:
       - t2.micro
       - t3.micro
-
-  KeyName:
-    Type: AWS::EC2::KeyPair::KeyName
-    Description: Existing EC2 KeyPair
-
+      
   SubnetId:
     Type: AWS::EC2::Subnet::Id
     Description: Subnet in the existing VPC
-
+    Default: subnet-0503db88ced8999ae 
   SecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
     Description: Existing Security Group with port 80 open
+    Default: sg-0870be6b37463981e
 
   AmiId:
     Type: AWS::EC2::Image::Id
     Description: Amazon Linux 2 AMI
+    Default: ami-068c0051b15cdb816
 
 Resources:
   WebServerInstance:
@@ -31,7 +29,6 @@ Resources:
     Properties:
       InstanceType: !Ref InstanceType
       ImageId: !Ref AmiId
-      KeyName: !Ref KeyName
       SubnetId: !Ref SubnetId
       SecurityGroupIds:
         - !Ref SecurityGroupId
