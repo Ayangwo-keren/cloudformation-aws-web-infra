@@ -32,3 +32,5 @@ Resources:
       SubnetId: !Ref SubnetId
       SecurityGroupIds:
         - !Ref SecurityGroupId
+
+        
