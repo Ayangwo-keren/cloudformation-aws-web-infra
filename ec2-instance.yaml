@@ -1,50 +1,65 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Create an EC2 instance in a public subnet using existing resources
+Description: >
+  Create two EC2 instances in different VPCs and public subnets
+  using one CloudFormation stack
 
 Parameters:
+
   InstanceType:
     Type: String
     Default: t2.micro
     AllowedValues:
       - t2.micro
       - t3.micro
-    Description: EC2 instance type
-
-  SubnetId:
-    Type: AWS::EC2::Subnet::Id
-    Description: Public subnet ID in the target VPC
-
-  SecurityGroupId:
-    Type: AWS::EC2::SecurityGroup::Id
-    Description: Security group ID in the same VPC as the subnet
 
   KeyName:
     Type: AWS::EC2::KeyPair::KeyName
-    Description: EC2 key pair name for SSH access
+    Description: Existing EC2 Key Pair
 
-  AmiId:
-    Type: AWS::EC2::Image::Id
-    Description: Amazon Linux 2 AMI (us-east-1)
+  SubnetVpcA:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-025b1d1f3a33559bb
+    Description: Public subnet in VPC A
+
+  SecurityGroupVpcA:
+    Type: AWS::EC2::SecurityGroup::Id
+    Default: sg-05dd3efe190ff30ef
+    Description: Security group in VPC A
+
+  SubnetVpcB:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-04c5dc9a3aca59e0e
+    Description: Public subnet in VPC B
+
+  SecurityGroupVpcB:
+    Type: AWS::EC2::SecurityGroup::Id
+    Default: sg-0b0585d99610bb23c
+    Description: Security group in VPC B
 
 Resources:
-  PublicEC2Instance:
+
+  EC2InstanceVpcA:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType
-      ImageId: !Ref AmiId
-      SubnetId: !Ref SubnetId
+      ImageId: ami-07ff62358b87c7116
       KeyName: !Ref KeyName
-      SecurityGroupIds:
-        - !Ref SecurityGroupId
-      Tags:
-        - Key: Name
-          Value: Public-EC2
+      NetworkInterfaces:
+        - DeviceIndex: 0
+          SubnetId: !Ref SubnetVpcA
+          GroupSet:
+            - !Ref SecurityGroupVpcA
+          AssociatePublicIpAddress: true
 
-Outputs:
-  InstanceId:
-    Description: EC2 Instance ID
-    Value: !Ref PublicEC2Instance
-
-  PublicIP:
-    Description: Public IP address of the EC2 instance
-    Value: !GetAtt PublicEC2Instance.PublicIp
+  EC2InstanceVpcB:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: ami-07ff62358b87c7116
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+        - DeviceIndex: 0
+          SubnetId: !Ref SubnetVpcB
+          GroupSet:
+            - !Ref SecurityGroupVpcB
+          AssociatePublicIpAddress: true
