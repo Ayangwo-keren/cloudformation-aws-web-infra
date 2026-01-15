@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Create a public EC2 instance using an existing Security Group and Subnet
+Description: Create an EC2 instance in a public subnet using existing resources
 
 Parameters:
   InstanceType:
@@ -8,29 +8,43 @@ Parameters:
     AllowedValues:
       - t2.micro
       - t3.micro
-      
+    Description: EC2 instance type
+
   SubnetId:
     Type: AWS::EC2::Subnet::Id
-    Description: Subnet in the existing VPC
-    Default: subnet-0503db88ced8999ae 
+    Description: Public subnet ID in the target VPC
+
   SecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
-    Description: Existing Security Group with port 80 open
-    Default: sg-0870be6b37463981e
+    Description: Security group ID in the same VPC as the subnet
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 key pair name for SSH access
 
   AmiId:
     Type: AWS::EC2::Image::Id
-    Description: Amazon Linux 2 AMI
-    Default: ami-068c0051b15cdb816
+    Description: Amazon Linux 2 AMI (us-east-1)
 
 Resources:
-  WebServerInstance:
+  PublicEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType
       ImageId: !Ref AmiId
       SubnetId: !Ref SubnetId
+      KeyName: !Ref KeyName
       SecurityGroupIds:
         - !Ref SecurityGroupId
+      Tags:
+        - Key: Name
+          Value: Public-EC2
 
-        
+Outputs:
+  InstanceId:
+    Description: EC2 Instance ID
+    Value: !Ref PublicEC2Instance
+
+  PublicIP:
+    Description: Public IP address of the EC2 instance
+    Value: !GetAtt PublicEC2Instance.PublicIp
