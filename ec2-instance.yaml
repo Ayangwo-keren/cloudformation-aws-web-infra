@@ -12,10 +12,6 @@ Parameters:
       - t2.micro
       - t3.micro
 
-  KeyName:
-    Type: AWS::EC2::KeyPair::KeyName
-    Description: Existing EC2 Key Pair
-
   SubnetVpcA:
     Type: AWS::EC2::Subnet::Id
     Default: subnet-025b1d1f3a33559bb
@@ -43,7 +39,6 @@ Resources:
     Properties:
       InstanceType: !Ref InstanceType
       ImageId: ami-07ff62358b87c7116
-      KeyName: !Ref KeyName
       NetworkInterfaces:
         - DeviceIndex: 0
           SubnetId: !Ref SubnetVpcA
@@ -56,7 +51,6 @@ Resources:
     Properties:
       InstanceType: !Ref InstanceType
       ImageId: ami-07ff62358b87c7116
-      KeyName: !Ref KeyName
       NetworkInterfaces:
         - DeviceIndex: 0
           SubnetId: !Ref SubnetVpcB
