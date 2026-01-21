@@ -1,56 +1,41 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  Parameterized VPC network with one public subnet and route table
+  Parameterized VPC network with one public and one private subnet
 
 Parameters:
 
-  VpcName:
+  EnvPrefix:
     Type: String
-    Default: keren-vpc2
-    Description: Name of the VPC
+    Default: keren
+    Description: Environment prefix for resource naming
 
-  VpcCidr:
+  CidrPrefix:
     Type: String
-    Default: 10.0.0.0/16
-    Description: CIDR block for the VPC
-
-  PublicSubnetName:
-    Type: String
-    Default: keren-public-subnet
-    Description: Name of the public subnet
-
-  PublicSubnetCidr:
-    Type: String
-    Default: 10.0.1.0/24
-    Description: CIDR block for the public subnet
-
-  PublicRouteTableName:
-    Type: String
-    Default: keren-public-rt
-    Description: Name of the public route table
+    Default: 10.0
+    Description: CIDR prefix for the VPC resources
 
   AvailabilityZone:
     Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for the subnet
+    Description: Availability Zone for the subnets
 
 Resources:
 
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref VpcCidr
+      CidrBlock: !Sub "${CidrPrefix}.0.0/16"
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Ref VpcName
+          Value: !Sub "${EnvPrefix}-vpc2"
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub "${VpcName}-igw"
+          Value: !Sub "${EnvPrefix}-vpc2-igw"
 
   AttachInternetGateway:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -58,16 +43,17 @@ Resources:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
 
+
   PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: !Ref PublicSubnetCidr
+      CidrBlock: !Sub "${CidrPrefix}.1.0/24"
       AvailabilityZone: !Ref AvailabilityZone
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Ref PublicSubnetName
+          Value: !Sub "${EnvPrefix}-public-subnet"
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -75,7 +61,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Ref PublicRouteTableName
+          Value: !Sub "${EnvPrefix}-public-rt"
 
   PublicRoute:
     Type: AWS::EC2::Route
@@ -90,6 +76,31 @@ Resources:
     Properties:
       SubnetId: !Ref PublicSubnet
       RouteTableId: !Ref PublicRouteTable
+      
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Sub "${CidrPrefix}.2.0/24"
+      AvailabilityZone: !Ref AvailabilityZone
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvPrefix}-private-subnet"
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${EnvPrefix}-private-rt"
+
+  PrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
 
 Outputs:
 
@@ -100,6 +111,10 @@ Outputs:
   PublicSubnetId:
     Description: Public Subnet ID
     Value: !Ref PublicSubnet
+
+  PrivateSubnetId:
+    Description: Private Subnet ID
+    Value: !Ref PrivateSubnet
 
   InternetGatewayId:
     Description: Internet Gateway ID
