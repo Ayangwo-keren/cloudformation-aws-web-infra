@@ -12,25 +12,25 @@ Parameters:
       - t2.micro
       - t3.micro
 
-  SubnetVpcA:
-    Type: AWS::EC2::Subnet::Id
-    Default: subnet-025b1d1f3a33559bb
-    Description: Public subnet in VPC A
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 KeyPair
+    Default: keren-key
 
-  SecurityGroupVpcA:
-    Type: AWS::EC2::SecurityGroup::Id
-    Default: sg-05dd3efe190ff30ef
-    Description: Security group in VPC A
-
-  SubnetVpcB:
+  SubnetId:
     Type: AWS::EC2::Subnet::Id
-    Default: subnet-04c5dc9a3aca59e0e
-    Description: Public subnet in VPC B
+    Description: Subnet in the existing VPC
+    Default: subnet-01b2d1ae1f6351dff
 
   SecurityGroupVpcB:
     Type: AWS::EC2::SecurityGroup::Id
-    Default: sg-0b0585d99610bb23c
-    Description: Security group in VPC B
+    Description: Existing Security Group with port 80 open
+    Default: sg-05dd3efe190ff30ef
+
+  AmiId:
+    Type: AWS::EC2::Image::Id
+    Description: Amazon Linux 2 AMI
+    Default: ami-0b6c6ebed2801a5cb
 
 Resources:
 
@@ -50,10 +50,13 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType
-      ImageId: ami-07ff62358b87c7116
-      NetworkInterfaces:
-        - DeviceIndex: 0
-          SubnetId: !Ref SubnetVpcB
-          GroupSet:
-            - !Ref SecurityGroupVpcB
-          AssociatePublicIpAddress: true
+      ImageId: !Ref AmiId
+      KeyName: !Ref KeyName
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds:
+        - !Ref SecurityGroupId
+      Tags:
+        - Key: Name
+          Value: CloudFormation-Web-Server
+
+
