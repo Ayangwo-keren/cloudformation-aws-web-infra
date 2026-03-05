@@ -34,17 +34,18 @@ Parameters:
 
 Resources:
 
-  EC2InstanceVpcA:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: !Ref InstanceType
-      ImageId: ami-07ff62358b87c7116
-      NetworkInterfaces:
-        - DeviceIndex: 0
-          SubnetId: !Ref SubnetVpcA
-          GroupSet:
-            - !Ref SecurityGroupVpcA
-          AssociatePublicIpAddress: true
+  # EC2InstanceVpcA:
+  #   Type: AWS::EC2::Instance
+  #   Properties:
+  #     InstanceType: !Ref InstanceType
+  #     ImageId: !Ref AmiId
+  #     KeyName: !Ref KeyName
+  #     NetworkInterfaces:
+  #       - DeviceIndex: 0
+  #         SubnetId: !Ref SubnetVpcA
+  #         GroupSet:
+  #           - !Ref SecurityGroupVpcA
+  #         AssociatePublicIpAddress: true
 
   EC2InstanceVpcB:
     Type: AWS::EC2::Instance
