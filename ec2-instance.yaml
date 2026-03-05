@@ -1,7 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Create a public EC2 instance using an existing Security Group and Subnet
+Description: >
+  Create two EC2 instances in different VPCs and public subnets
+  using one CloudFormation stack
 
 Parameters:
+
   InstanceType:
     Type: String
     Default: t2.micro
@@ -19,7 +22,7 @@ Parameters:
     Description: Subnet in the existing VPC
     Default: subnet-01b2d1ae1f6351dff
 
-  SecurityGroupId:
+  SecurityGroupVpcB:
     Type: AWS::EC2::SecurityGroup::Id
     Description: Existing Security Group with port 80 open
     Default: sg-05dd3efe190ff30ef
@@ -30,7 +33,20 @@ Parameters:
     Default: ami-0b6c6ebed2801a5cb
 
 Resources:
-  WebServerInstance:
+
+  EC2InstanceVpcA:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: ami-07ff62358b87c7116
+      NetworkInterfaces:
+        - DeviceIndex: 0
+          SubnetId: !Ref SubnetVpcA
+          GroupSet:
+            - !Ref SecurityGroupVpcA
+          AssociatePublicIpAddress: true
+
+  EC2InstanceVpcB:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType
