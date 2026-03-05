@@ -22,7 +22,7 @@ Parameters:
     Description: Subnet in the existing VPC
     Default: subnet-01b2d1ae1f6351dff
 
-  SecurityGroupVpcB:
+  SecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
     Description: Existing Security Group with port 80 open
     Default: sg-05dd3efe190ff30ef
