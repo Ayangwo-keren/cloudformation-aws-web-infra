@@ -12,18 +12,22 @@ Parameters:
   KeyName:
     Type: AWS::EC2::KeyPair::KeyName
     Description: Existing EC2 KeyPair
+    Default: keren-key
 
   SubnetId:
     Type: AWS::EC2::Subnet::Id
     Description: Subnet in the existing VPC
+    Default: subnet-01b2d1ae1f6351dff
 
   SecurityGroupId:
     Type: AWS::EC2::SecurityGroup::Id
     Description: Existing Security Group with port 80 open
+    Default: sg-05dd3efe190ff30ef
 
   AmiId:
     Type: AWS::EC2::Image::Id
     Description: Amazon Linux 2 AMI
+    Default: ami-0b6c6ebed2801a5cb
 
 Resources:
   WebServerInstance:
@@ -38,3 +42,5 @@ Resources:
       Tags:
         - Key: Name
           Value: CloudFormation-Web-Server
+
+
