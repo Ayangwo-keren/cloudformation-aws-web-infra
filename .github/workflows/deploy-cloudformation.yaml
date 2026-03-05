@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: us-east-1
   STACK_NAME: my-cloudformation-stack
-  TEMPLATE_FILE: cloudformation/ec2-instance.yaml
+  TEMPLATE_FILE: ec2-instance.yaml
 
 jobs:
   deploy:
