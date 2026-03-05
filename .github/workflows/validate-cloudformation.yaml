@@ -1,7 +1,7 @@
-name: Deploy CloudFormation
+name: Validate CloudFormation
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -11,8 +11,8 @@ env:
   TEMPLATE_FILE: ec2-instance.yaml
 
 jobs:
-  deploy:
-    name: Deploy Stack
+  validate:
+    name: Validate Stack
     runs-on: ubuntu-latest
 
     steps:
@@ -26,10 +26,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Deploy CloudFormation stack
+      - name: Validate CloudFormation template
         run: |
-          aws cloudformation deploy \
-            --stack-name ${{ env.STACK_NAME }} \
-            --template-file ${{ env.TEMPLATE_FILE }} \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --no-fail-on-empty-changeset
+          aws cloudformation validate-template \
+            --template-body file://${{ env.TEMPLATE_FILE }}
+
+
